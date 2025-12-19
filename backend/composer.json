@@ -1,0 +1,13 @@
+{
+  "name": "25rp20201-mbarushimana/patient-backend",
+  "type": "project",
+  "require": {
+    "php": "^8.2"
+  },
+  "autoload": {
+    "classmap": [
+      "models/",
+      "config/"
+    ]
+  }
+}
