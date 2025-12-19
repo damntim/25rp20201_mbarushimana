@@ -5,9 +5,14 @@ on:
     branches:
       - main
       - develop
+  pull_request:
+    branches:
+      - main
+      - develop
 
 jobs:
-  backend:
+  backend-lint:
+    name: Backend - PHP Lint
     runs-on: ubuntu-latest
 
     steps:
@@ -32,10 +37,108 @@ jobs:
             php -l "$file"
           done < <(find . -name '*.php' -not -path './vendor/*' -print0)
 
+  backend-phpcs:
+    name: Backend - PHPCS (PSR-12)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer
+          extensions: pdo_sqlite, sqlite3
+
+      - name: Install dependencies
+        working-directory: backend
+        run: composer install --no-interaction --prefer-dist
+
       - name: PHPCS (PSR-12)
         working-directory: backend
         run: vendor/bin/phpcs --standard=PSR12 --extensions=php --ignore=vendor .
 
+  backend-tests:
+    name: Backend - PHPUnit
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer
+          extensions: pdo_sqlite, sqlite3
+
+      - name: Install dependencies
+        working-directory: backend
+        run: composer install --no-interaction --prefer-dist
+
       - name: PHPUnit
         working-directory: backend
         run: vendor/bin/phpunit
+
+  frontend-check:
+    name: Frontend - Sanity Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Frontend files + JS syntax
+        run: |
+          test -f frontend/index.html
+          test -f frontend/app.js
+          node --check frontend/app.js
+
+  markdown-lint:
+    name: Docs - Markdown Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Markdown lint
+        uses: DavidAnson/markdownlint-cli2-action@v19
+        with:
+          config: .markdownlint-cli2.yaml
+          globs: |
+            **/*.md
+
+  yaml-lint:
+    name: Repo - YAML Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: YAML lint
+        uses: ibiqlik/action-yamllint@v3
+        with:
+          config_file: .yamllint.yml
+          file_or_dir: .github/workflows
+
+  security-trivy:
+    name: Security - Trivy FS Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Trivy filesystem scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: table
+          ignore-unfixed: true
+          severity: HIGH,CRITICAL
+          exit-code: '0'
