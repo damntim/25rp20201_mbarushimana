@@ -1,6 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
+namespace PatientManagement\Tests;
+
+use InvalidArgumentException;
+use PatientManagement\Models\Patient;
+use PDO;
 use PHPUnit\Framework\TestCase;
 
 final class PatientTest extends TestCase

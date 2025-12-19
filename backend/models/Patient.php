@@ -1,5 +1,11 @@
 <?php
+
 declare(strict_types=1);
+
+namespace PatientManagement\Models;
+
+use InvalidArgumentException;
+use PDO;
 
 class Patient
 {
