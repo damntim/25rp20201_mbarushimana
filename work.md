@@ -49,15 +49,15 @@ A simple Patient Management System demonstrating the complete DevOps lifecycle. 
 **Tools:** GitHub
 
 **Tasks:**
-1. Create GitHub repository: `25rp20201_mbarushimana-patient-management`
-2. Initialize local Git repository
-3. Implement branching strategy:
+1. ✅ Create GitHub repository: `25rp20201_mbarushimana-patient-management`
+2. ✅ Initialize local Git repository
+3. ✅ Implement branching strategy:
    - `main` branch (production)
    - `develop` branch (development)
    - `feature/*` branches (new features)
-4. Create `.gitignore` file
-5. Make initial commit with project structure
-6. Push to remote repository
+4. ✅ Create `.gitignore` file
+5. ✅ Make initial commit with project structure
+6. ✅ Push to remote repository
 
 **Branching Strategy:**
 ```
