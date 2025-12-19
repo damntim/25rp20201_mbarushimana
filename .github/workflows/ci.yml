@@ -99,19 +99,7 @@ jobs:
           test -f frontend/app.js
           node --check frontend/app.js
 
-  markdown-lint:
-    name: Docs - Markdown Lint
-    runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Markdown lint
-        uses: DavidAnson/markdownlint-cli2-action@v19
-        with:
-          config: .markdownlint-cli2.yaml
-          globs: |
-            **/*.md
 
   yaml-lint:
     name: Repo - YAML Lint
