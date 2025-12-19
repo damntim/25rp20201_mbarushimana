@@ -99,8 +99,6 @@ jobs:
           test -f frontend/app.js
           node --check frontend/app.js
 
-
-
   yaml-lint:
     name: Repo - YAML Lint
     runs-on: ubuntu-latest
