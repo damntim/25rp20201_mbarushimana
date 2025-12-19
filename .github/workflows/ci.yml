@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer
+
+      - name: Install dependencies
+        working-directory: backend
+        run: composer install --no-interaction --prefer-dist
+
+      - name: PHP lint
+        working-directory: backend
+        run: |
+          set -e
+          while IFS= read -r -d '' file; do
+            php -l "$file"
+          done < <(find . -name '*.php' -not -path './vendor/*' -print0)
+
+      - name: PHPCS (PSR-12)
+        working-directory: backend
+        run: vendor/bin/phpcs --standard=PSR12 --extensions=php --ignore=vendor .
+
+      - name: PHPUnit
+        working-directory: backend
+        run: vendor/bin/phpunit
