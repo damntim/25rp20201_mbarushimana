@@ -66,7 +66,7 @@
   {"patients": []}
   ```
 - [DONE] Set proper permissions: `chmod 777 data/`
-- [DONE] Test write operations locally
+- [ ] Test write operations locally
 
 ---
 

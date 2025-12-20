@@ -57,25 +57,52 @@ jobs:
 
   build:
     name: Build Docker image
+    # CI workflow (insert these steps where you set up Docker build/push)
     runs-on: ubuntu-latest
     needs: test
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up QEMU
+      - name: Set up QEMU (optional for multi-arch)
         uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build (no push on PRs)
+      - name: Docker info
+        run: docker info
+
+      - name: Buildx version
+        run: docker buildx version
+
+      - name: Builder info
+        run: docker buildx ls
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push (fix invalid tag and output mode)
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile
-          push: false
-          tags: ${{ secrets.DOCKERHUB_REPOSITORY }}:sha-${{ github.sha }}
+          # Push on non-PR events; load on PRs (prevents registry writes during PR)
+          push: ${{ github.event_name != 'pull_request' }}
+          load: ${{ github.event_name == 'pull_request' }}
+          # FIX: provide valid repository/name:tag values
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/patient-mgmt:sha-${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/patient-mgmt:${{ github.ref_name }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/patient-mgmt:latest
+          # Optional: cache for faster builds
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          # Keep provenance attestation (equivalent to --attest type=provenance,mode=max)
+          provenance: mode=max
 
   deploy:
     name: Deploy (push image to Docker Hub)
