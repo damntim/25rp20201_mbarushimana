@@ -152,106 +152,23 @@ jobs:
           fi
           
           echo "🚂 Deploying to Railway..."
+          echo "📦 Service: 25rp20201_mbarushimana"
           
-          # Check if service name is provided, otherwise list available services
-          if [ -n "${{ secrets.RAILWAY_SERVICE_NAME }}" ]; then
-            railway up --service=${{ secrets.RAILWAY_SERVICE_NAME }}
-          else
-            echo "ℹ️  No RAILWAY_SERVICE_NAME provided, deploying to current project..."
-            railway up || {
-              echo "❌ Deployment failed. Available services:"
-              railway service list 2>/dev/null || echo "Could not list services"
-              echo ""
-              echo "💡 Tip: Set RAILWAY_SERVICE_NAME secret with one of the service names above"
-              exit 1
-            }
-          fi
+          railway up --service=25rp20201_mbarushimana || {
+            echo "❌ Deployment failed"
+            echo "⚠️  Check Railway logs for details"
+            exit 1
+          }
 
       - name: Railway deployment success
         run: |
           echo "✅ Deployed to Railway"
-          echo "🚂 Service: ${{ secrets.RAILWAY_SERVICE_NAME || 'patient-app' }}"
-
-  deploy-kubernetes:
-    name: Deploy to Kubernetes
-    runs-on: ubuntu-latest
-    needs: build-and-push
-    # Only deploy on push to main branch or manual trigger
-    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch'
-    steps:
-      - name: Install kubectl
-        uses: azure/setup-kubectl@v4
-        with:
-          version: v1.29.0
-
-      - name: Configure kubeconfig from secret
-        shell: bash
-        run: |
-          if [ -z "${{ secrets.KUBE_CONFIG }}" ]; then
-            echo "❌ KUBE_CONFIG secret is not set. Please add it in GitHub Secrets."
-            echo "How to get your kubeconfig:"
-            echo "1. From your cluster provider (AWS EKS, GKE, AKS, etc.)"
-            echo "2. Or run: kubectl config view --raw --minify"
-            echo "3. Add the output to GitHub Secrets as KUBE_CONFIG"
-            exit 1
-          fi
-          mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBE_CONFIG }}" > $HOME/.kube/config
-          chmod 600 $HOME/.kube/config
-          
-          echo "📋 kubectl version:"
-          kubectl version --client
-          
-          echo "🔍 Attempting to connect to cluster..."
-          if ! kubectl cluster-info; then
-            echo "❌ Failed to connect to Kubernetes cluster"
-            echo "⚠️  Your KUBE_CONFIG appears to be for Docker Desktop (kubernetes.docker.internal)"
-            echo "Please update KUBE_CONFIG secret with your production cluster credentials"
-            exit 1
-          fi
-          echo "✅ Successfully connected to Kubernetes cluster"
-
-      - name: Force redeploy annotation (for latest tag)
-        shell: bash
-        run: |
-          kubectl -n ${{ env.K8S_NAMESPACE }} annotate deployment/${{ env.DEPLOYMENT_NAME }} "trae.ai/redeploy=$(date +%s)" --overwrite || true
-
-      - name: Set image to latest
-        shell: bash
-        run: |
-          kubectl -n ${{ env.K8S_NAMESPACE }} set image deployment/${{ env.DEPLOYMENT_NAME }} \
-            ${{ env.CONTAINER_NAME }}=${{ env.IMAGE_NAME }}:latest --record
-
-      - name: Wait for rollout
-        shell: bash
-        run: |
-          kubectl -n ${{ env.K8S_NAMESPACE }} rollout status deployment/${{ env.DEPLOYMENT_NAME }} --timeout=180s
-
-      - name: Smoke test (in-cluster)
-        shell: bash
-        run: |
-          set -e
-          # Use ephemeral curl pod to test the service inside the cluster
-          kubectl -n ${{ env.K8S_NAMESPACE }} run smoke-test --image=curlimages/curl:8.7.1 --restart=Never --rm -it \
-            --command -- sh -c "curl -fsS http://${{ env.SERVICE_NAME }}${{ env.SMOKE_TEST_PATH }}"
-          echo "Smoke test passed"
-
-      - name: Print deployment image
-        shell: bash
-        run: |
-          IMG=$(kubectl -n ${{ env.K8S_NAMESPACE }} get deploy/${{ env.DEPLOYMENT_NAME }} -o jsonpath='{.spec.template.spec.containers[?(@.name=="'${{ env.CONTAINER_NAME }}'")].image}')
-          echo "Deployed image: $IMG"
-
-      - name: Deployment success
-        run: |
-          echo "✅ Deployed latest image to Kubernetes"
-          echo "📦 Image: ${{ env.IMAGE_NAME }}:latest"
-          echo "🎯 Namespace: ${{ env.K8S_NAMESPACE }}"
-          echo "🚀 Deployment: ${{ env.DEPLOYMENT_NAME }}"
+          echo "🚂 Service: 25rp20201_mbarushimana"
+          echo "🌍 Project: satisfied-youth (production)"
 
       - name: Rollback on failure
         if: failure()
         shell: bash
         run: |
-          echo "Deployment failed — performing rollback..."
-          kubectl -n ${{ env.K8S_NAMESPACE }} rollout undo deployment/${{ env.DEPLOYMENT_NAME }}
+          echo "❌ Railway deployment failed"
+          echo "Check deployment logs at: https://railway.app"
