@@ -136,12 +136,36 @@ jobs:
       - name: Install Railway CLI
         run: |
           curl -fsSL https://railway.app/install.sh | sh
+          echo "$HOME/.railway/bin" >> $GITHUB_PATH
 
       - name: Deploy to Railway
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
         run: |
-          railway up --service=${{ secrets.RAILWAY_SERVICE_NAME || 'patient-app' }}
+          if [ -z "${{ secrets.RAILWAY_TOKEN }}" ]; then
+            echo "❌ RAILWAY_TOKEN secret is not set"
+            echo "How to get your Railway token:"
+            echo "1. Go to https://railway.app/account/tokens"
+            echo "2. Create a new token"
+            echo "3. Add it to GitHub Secrets as RAILWAY_TOKEN"
+            exit 1
+          fi
+          
+          echo "🚂 Deploying to Railway..."
+          
+          # Check if service name is provided, otherwise list available services
+          if [ -n "${{ secrets.RAILWAY_SERVICE_NAME }}" ]; then
+            railway up --service=${{ secrets.RAILWAY_SERVICE_NAME }}
+          else
+            echo "ℹ️  No RAILWAY_SERVICE_NAME provided, deploying to current project..."
+            railway up || {
+              echo "❌ Deployment failed. Available services:"
+              railway service list 2>/dev/null || echo "Could not list services"
+              echo ""
+              echo "💡 Tip: Set RAILWAY_SERVICE_NAME secret with one of the service names above"
+              exit 1
+            }
+          fi
 
       - name: Railway deployment success
         run: |
@@ -164,14 +188,28 @@ jobs:
         shell: bash
         run: |
           if [ -z "${{ secrets.KUBE_CONFIG }}" ]; then
-            echo "KUBE_CONFIG secret is not set. Please add it in GitHub Secrets."
+            echo "❌ KUBE_CONFIG secret is not set. Please add it in GitHub Secrets."
+            echo "How to get your kubeconfig:"
+            echo "1. From your cluster provider (AWS EKS, GKE, AKS, etc.)"
+            echo "2. Or run: kubectl config view --raw --minify"
+            echo "3. Add the output to GitHub Secrets as KUBE_CONFIG"
             exit 1
           fi
           mkdir -p $HOME/.kube
           echo "${{ secrets.KUBE_CONFIG }}" > $HOME/.kube/config
           chmod 600 $HOME/.kube/config
+          
+          echo "📋 kubectl version:"
           kubectl version --client
-          kubectl cluster-info
+          
+          echo "🔍 Attempting to connect to cluster..."
+          if ! kubectl cluster-info; then
+            echo "❌ Failed to connect to Kubernetes cluster"
+            echo "⚠️  Your KUBE_CONFIG appears to be for Docker Desktop (kubernetes.docker.internal)"
+            echo "Please update KUBE_CONFIG secret with your production cluster credentials"
+            exit 1
+          fi
+          echo "✅ Successfully connected to Kubernetes cluster"
 
       - name: Force redeploy annotation (for latest tag)
         shell: bash
