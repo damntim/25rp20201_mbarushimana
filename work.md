@@ -10,10 +10,9 @@
 A simple Patient Management System demonstrating the complete DevOps lifecycle. The application allows adding and retrieving patient information through a web interface.
 
 **Application Stack:**
-- **Frontend:** HTML/Tailwind CSS/JavaScript (Simple form)
-- **Backend:** PHP (RESTful API)
-- **Database:** MySQL
-- **Architecture:** Microservices (Frontend + Backend + Database)
+- **Application:** PHP (Single stack with HTML/CSS/JavaScript frontend)
+- **Database:** JSON file storage
+- **Architecture:** Monolithic application (Single container)
 
 ---
 
@@ -29,12 +28,12 @@ A simple Patient Management System demonstrating the complete DevOps lifecycle. 
 2. ✅ Install Docker Desktop with WSL2 backend
 3. ✅ Enable Kubernetes in Docker Desktop
 4. ✅ Install required tools:
-   - Git
-   - PHP (CLI)
-   - Composer
-   - kubectl
-   - Docker CLI
-5. ✅ Verify installations with version checks
+     - Git
+     - PHP (CLI)
+     - Composer
+     - kubectl
+     - Docker CLI
+5. Verify installations with version checks
 
 **Deliverables:**
 - Screenshots of successful installations
@@ -64,8 +63,8 @@ A simple Patient Management System demonstrating the complete DevOps lifecycle. 
 main (production-ready)
   └── develop (integration)
        ├── feature/patient-form
-       ├── feature/api-endpoints
-       └── feature/database-setup
+       ├── feature/patient-api
+       └── feature/json-storage
 ```
 
 **Deliverables:**
@@ -76,44 +75,57 @@ main (production-ready)
 
 ---
 
-### **PHASE 3: Application Development** ✅
+### **PHASE 3: Application Development** 
 **Objective:** Develop the Patient Management System
+**Status:** Completed ✅
 
+<!-- The following sub-sections remain as documented -->
 **Components:**
 
-#### **3.1 Backend API (PHP)**
+#### **3.1 PHP Application (Single Stack)**
 **Files:**
-- `backend/index.php` - Main entry point
-- `backend/config/database.php` - Database connection
-- `backend/api/patients.php` - API endpoints handler
-- `backend/models/Patient.php` - Patient model class
-- `backend/composer.json` - Dependencies
+- `index.php` - Main entry point with HTML form and display
+- `api.php` - API endpoints handler
+- `Patient.php` - Patient model class
+- `data/patients.json` - JSON database file
+- `composer.json` - Dependencies (if needed)
+- `config.php` - Application configuration
 
 **API Endpoints:**
-- `POST /api/patients.php` - Add new patient
-- `GET /api/patients.php` - Get all patients
-- `GET /api/patients.php?id=X` - Get patient by ID
+- `POST /api.php?action=add` - Add new patient
+- `GET /api.php?action=list` - Get all patients
+- `GET /api.php?action=get&id=X` - Get patient by ID
 
-#### **3.2 Frontend (HTML/Tailwind CSS/JS)**
-**Files:**
-- `frontend/index.html` - Main page with Tailwind CDN
-- `frontend/app.js` - Frontend logic (Fetch API calls)
-
+#### **3.2 Frontend (Embedded in PHP)**
 **Features:**
-- Form to add patient (Name, Age, Email, Condition)
+- HTML form to add patient (Name, Age, Email, Condition)
 - Display list of patients in cards
-- Responsive design with Tailwind CSS
+- Responsive design with Tailwind CSS CDN
 - Modern UI with gradient backgrounds
+- JavaScript for form handling and dynamic updates
 
-#### **3.3 Database**
-- MySQL for data storage
-- Patient table: id, name, age, email, condition, created_at
+#### **3.3 Database (JSON)**
+**Structure:**
+```json
+{
+  "patients": [
+    {
+      "id": "1",
+      "name": "John Doe",
+      "age": 30,
+      "email": "john@example.com",
+      "condition": "Flu",
+      "created_at": "2024-01-01 10:00:00"
+    }
+  ]
+}
+```
 
 **Deliverables:**
-- ✅ Source code for all components
-- ✅ Local testing screenshots
-- ✅ API testing with Postman/curl
-- ✅ MySQL database schema export
+- Source code for all components (index.php, api.php, Patient.php, config.php, composer.json, data/patients.json)
+- Local testing screenshots
+- API testing with Postman/curl
+- Sample JSON database file
 
 ---
 
@@ -123,14 +135,14 @@ main (production-ready)
 **Tools:** GitHub Actions
 
 **Tasks:**
-1. ✅ Create `.github/workflows/ci.yml`
+1. Create `.github/workflows/ci.yml`
 2. Configure CI pipeline:
-   - ✅ Trigger on push to `develop` and `main`
-   - ✅ Install PHP dependencies with Composer
-   - ✅ Run PHP linting (PHP CodeSniffer)
-   - ✅ Run unit tests (PHPUnit - basic tests)
-   - Build Docker images
-   - Push images to Docker Hub
+   - Trigger on push to `develop` and `main`
+   - Install PHP dependencies with Composer
+   - Run PHP linting (PHP CodeSniffer)
+   - Run unit tests (PHPUnit - basic tests)
+   - Build Docker image
+   - Push image to Docker Hub
 3. Add status badges to README
 
 **CI Pipeline Steps:**
@@ -142,39 +154,36 @@ Build → Test → Lint → Docker Build → Push to Registry
 - GitHub Actions workflow file
 - CI pipeline run screenshots
 - Test results
-- Docker Hub repository links
+- Docker Hub repository link
 
 ---
 
 ### **PHASE 5: Containerization (Docker)**
-**Objective:** Package applications into Docker containers
+**Objective:** Package application into Docker container
 
 **Tools:** Docker, Docker Compose, Docker Hub
 
 **Tasks:**
-1. Create Dockerfiles for each service:
-   - `frontend/Dockerfile` - Nginx with static files
-   - `backend/Dockerfile` - PHP-FPM with Apache
-   - Database: Use official MySQL image
+1. Create Dockerfile for the application:
+   - `Dockerfile` - PHP with Apache
+   - Include JSON data directory with proper permissions
 2. Create `docker-compose.yml` for local development
-3. Build Docker images with unique tags:
-   - `25rp20201-mbarushimana/patient-frontend:v1.0`
-   - `25rp20201-mbarushimana/patient-backend:v1.0`
-4. Push images to Docker Hub
-5. Test multi-container setup locally
+3. Build Docker image with unique tag:
+   - `25rp20201-mbarushimana/patient-management:v1.0`
+4. Push image to Docker Hub
+5. Test container locally with volume mount for data persistence
 
-**Docker Compose Services:**
+**Docker Configuration:**
 ```yaml
-- frontend (port 80)
-- backend (port 8080)
-- mysql (port 3306)
+- app (port 80)
+  - Volume mount for data/patients.json
 ```
 
 **Deliverables:**
-- All Dockerfile configurations
+- Dockerfile configuration
 - docker-compose.yml file
-- Screenshots of running containers (`docker ps`)
-- Docker Hub repository screenshots
+- Screenshots of running container (`docker ps`)
+- Docker Hub repository screenshot
 - Container logs
 
 ---
@@ -187,26 +196,21 @@ Build → Test → Lint → Docker Build → Push to Registry
 **Tasks:**
 1. Create Kubernetes namespace: `25rp20201-mbarushimana`
 2. Create YAML manifests:
-   - **Deployments:**
-     - `k8s/frontend-deployment.yml`
-     - `k8s/backend-deployment.yml`
-     - `k8s/mysql-deployment.yml`
-   - **Services:**
-     - `k8s/frontend-service.yml` (LoadBalancer)
-     - `k8s/backend-service.yml` (ClusterIP)
-     - `k8s/mysql-service.yml` (ClusterIP)
-   - **ConfigMaps & Secrets:**
-     - `k8s/mysql-configmap.yml` (database config)
-     - `k8s/mysql-secret.yml` (passwords)
+   - **Deployment:**
+     - `k8s/app-deployment.yml`
+   - **Service:**
+     - `k8s/app-service.yml` (LoadBalancer)
+   - **ConfigMap:**
+     - `k8s/app-configmap.yml` (application config)
    - **PersistentVolume:**
-     - `k8s/mysql-pvc.yml` (data persistence)
+     - `k8s/app-pvc.yml` (JSON data persistence)
 3. Deploy to Kubernetes cluster
 4. Verify all pods are running
 5. Access application via LoadBalancer
 
 **Deployment Strategy:**
 - Rolling updates
-- Replica sets (2 replicas for backend/frontend)
+- Replica sets (2 replicas for high availability)
 - Health checks (liveness & readiness probes)
 
 **Deliverables:**
@@ -226,7 +230,7 @@ Build → Test → Lint → Docker Build → Push to Registry
 **Tasks:**
 1. Extend CI pipeline to include CD
 2. Create `.github/workflows/cd.yml`:
-   - Build Docker images on merge to main
+   - Build Docker image on merge to main
    - Push to Docker Hub with version tags
    - Deploy to Kubernetes automatically
    - Run smoke tests (basic health checks)
@@ -253,29 +257,27 @@ Code Push → Build → Test → Containerize → Push to Registry → Deploy to
 ### **PHASE 8: Configuration Management**
 **Objective:** Manage configurations across environments
 
-**Tools:** ConfigMaps, Secrets, Environment Variables
+**Tools:** ConfigMaps, Environment Variables
 
 **Tasks:**
 1. Externalize all configurations:
-   - Database credentials
+   - JSON file path
    - API URLs
    - Application settings
 2. Create environment-specific configs:
    - Development
    - Production
-3. Use Kubernetes ConfigMaps for non-sensitive data
-4. Use Kubernetes Secrets for sensitive data (base64 encoded)
-5. Document configuration management strategy
+3. Use Kubernetes ConfigMaps for configuration data
+4. Document configuration management strategy
 
 **Configuration Items:**
-- Database host, port, name
-- Database username/password
-- API base URL
-- CORS settings
+- JSON database file path
+- Application base URL
+- File permissions
 - Application port
 
 **Deliverables:**
-- ConfigMap and Secret YAML files
+- ConfigMap YAML files
 - Configuration management documentation
 - Environment comparison table
 - Screenshots of applied configs
@@ -307,6 +309,7 @@ Code Push → Build → Test → Containerize → Push to Registry → Deploy to
 - API response times (basic)
 - Error rates
 - Active connections
+- JSON file read/write operations
 
 **Deliverables:**
 - Kubernetes Dashboard screenshots
@@ -324,6 +327,7 @@ Code Push → Build → Test → Containerize → Push to Registry → Deploy to
 1. **High Availability:**
    - Multiple replicas (min 2 per service)
    - Load balancing configuration
+   - Shared volume for JSON data across replicas
 2. **Health Checks:**
    - Liveness probes (check if container is alive)
    - Readiness probes (check if ready to serve traffic)
@@ -331,10 +335,10 @@ Code Push → Build → Test → Containerize → Push to Registry → Deploy to
    - CPU/Memory requests and limits
 4. **Security:**
    - Non-root containers
-   - Secret management
-   - Read-only root filesystem (where possible)
+   - Read-only root filesystem (except data directory)
+   - Proper file permissions for JSON database
 5. **Backup & Recovery:**
-   - Database backup strategy
+   - JSON file backup strategy
    - Disaster recovery plan
    - Volume snapshots
 6. **Documentation:**
@@ -343,52 +347,25 @@ Code Push → Build → Test → Containerize → Push to Registry → Deploy to
    - Rollback procedures
    - Incident response plan
 
-**Best Practices Implemented:**
-- ✅ Infrastructure as Code (all YAML manifests)
-- ✅ Automated CI/CD
-- ✅ Container security
-- ✅ Resource limits
-- ✅ Health monitoring
-- ✅ Persistent storage
-- ✅ Configuration management
-
-**Deliverables:**
-- Updated Kubernetes manifests with best practices
-- Security checklist
-- Backup/restore scripts or procedures
-- Complete architecture diagram
-- DevOps runbook
-
 ---
 
 ## 📁 Complete Project Structure
 ```
 25rp20201_mbarushimana-patient-management/
-├── frontend/
-│   ├── index.html
-│   ├── app.js
-│   └── Dockerfile
-├── backend/
-│   ├── index.php
-│   ├── api/
-│   │   └── patients.php
-│   ├── config/
-│   │   └── database.php
-│   ├── models/
-│   │   └── Patient.php
-│   ├── composer.json
-│   └── Dockerfile
+├── index.php
+├── api.php
+├── Patient.php
+├── config.php
+├── composer.json
+├── data/
+│   └── patients.json
+├── Dockerfile
 ├── k8s/
 │   ├── namespace.yml
-│   ├── frontend-deployment.yml
-│   ├── frontend-service.yml
-│   ├── backend-deployment.yml
-│   ├── backend-service.yml
-│   ├── mysql-deployment.yml
-│   ├── mysql-service.yml
-│   ├── mysql-pvc.yml
-│   ├── mysql-configmap.yml
-│   └── mysql-secret.yml
+│   ├── app-deployment.yml
+│   ├── app-service.yml
+│   ├── app-pvc.yml
+│   └── app-configmap.yml
 ├── .github/
 │   └── workflows/
 │       ├── ci.yml
@@ -400,3 +377,12 @@ Code Push → Build → Test → Containerize → Push to Registry → Deploy to
     ├── architecture-diagram.png
     └── deployment-guide.md
 ```
+
+---
+
+## 🔄 Key Changes from Multi-Service Architecture
+1. **Single Container**: One Docker image contains the entire PHP application
+2. **JSON Database**: No separate database container - data stored in JSON file
+3. **Volume Management**: PersistentVolume for JSON file ensures data persistence across pod restarts
+4. **Simplified Deployment**: Single deployment manifest instead of multiple services
+5. **Shared Storage**: Multiple replicas share the same JSON file via PersistentVolume
