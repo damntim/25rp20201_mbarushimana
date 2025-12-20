@@ -1,9 +1,0 @@
-{
-  "name": "25rp20201_mbarushimana/patient-management",
-  "description": "Simple Patient Management System (PHP + JSON)",
-  "type": "project",
-  "require": {
-    "php": ">=8.0",
-    "ext-json": "*"
-  }
-}

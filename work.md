@@ -1,388 +1,347 @@
-# DevOps Complete Workflow Guide
-**Project:** Patient Management System  
-**DevOps Identifier:** `25rp20201_mbarushimana`  
-**Student:** 25rp20201 - Mbarushimana  
-**Environment:** WSL, Docker Desktop, Kubernetes, GitHub
+# DevOps Patient Management - Implementation Checklist
+**Student:** 25RP20201 - Mbarushimana  
+**Project:** Complete DevOps Lifecycle Implementation
 
 ---
 
-## 🎯 Project Overview
-A simple Patient Management System demonstrating the complete DevOps lifecycle. The application allows adding and retrieving patient information through a web interface.
+## 📋 Phase 1: Infrastructure & Environment Setup (10 marks)
 
-**Application Stack:**
-- **Application:** PHP (Single stack with HTML/CSS/JavaScript frontend)
-- **Database:** JSON file storage
-- **Architecture:** Monolithic application (Single container)
+### Environment Preparation (4 marks)
+- [ ] Install WSL2 Ubuntu 22.04
+- [ ] Install Docker Desktop with WSL2 backend enabled
+- [ ] Enable Kubernetes in Docker Desktop settings
+- [ ] Install Git in WSL
+- [ ] Install PHP 8.1+ CLI
+- [ ] Verify Docker: `docker --version`
+- [ ] Verify Kubernetes: `kubectl version --client`
+- [ ] Verify PHP: `php -v`
+- [ ] Take screenshot of all version outputs
 
----
+### Networking & Configuration (3 marks)
+- [ ] Verify Docker network is running: `docker network ls`
+- [ ] Test Kubernetes cluster: `kubectl cluster-info`
+- [ ] Confirm port 80 is available for application
+- [ ] Document network configuration
 
-## 📋 DevOps Workflow - All 10 Phases
+### Resource Allocation (2 marks)
+- [ ] Confirm Docker Desktop has 2+ CPU cores allocated
+- [ ] Confirm Docker Desktop has 4GB+ RAM allocated
+- [ ] Check available disk space (20GB+ recommended)
+- [ ] Take screenshot of Docker Desktop resource settings
 
-### **PHASE 1: Infrastructure Setup** 
-**Objective:** Set up the development environment using WSL and virtual environments
-
-**Tools:** WSL2, Docker Desktop, Kubernetes (Docker Desktop)
-
-**Tasks:**
-1. ✅ Install and configure WSL2 on Windows
-2. ✅ Install Docker Desktop with WSL2 backend
-3. ✅ Enable Kubernetes in Docker Desktop
-4. ✅ Install required tools:
-     - Git
-     - PHP (CLI)
-     - Composer
-     - kubectl
-     - Docker CLI
-5. Verify installations with version checks
-
-**Deliverables:**
-- Screenshots of successful installations
-- Output of version commands (`php -v`, `docker --version`, `kubectl version`)
-- Environment setup documentation
+### Documentation (1 mark)
+- [ ] Create `docs/infrastructure-setup.md`
+- [ ] Include all screenshots of installations
+- [ ] Document any issues encountered and solutions
 
 ---
 
-### **PHASE 2: Version Control & Git Workflow**
-**Objective:** Implement proper version control and branching strategy
+## 📋 Phase 2: Version Control & Git Workflow (10 marks)
 
-**Tools:** GitHub
+### Repository Setup (3 marks)
+- [ ] Create GitHub account (if needed)
+- [ ] Create repository: `25rp20201-patient-management`
+- [ ] Initialize local Git repo: `git init`
+- [ ] Configure Git user: `git config user.name` and `git config user.email`
+- [ ] Connect to remote: `git remote add origin <URL>`
+- [ ] Create `.gitignore` file (ignore `data/*.json`, `.env`, etc.)
+- [ ] Take screenshot of GitHub repository page
 
-**Tasks:**
-1. ✅ Create GitHub repository: `25rp20201_mbarushimana-patient-management`
-2. ✅ Initialize local Git repository
-3. ✅ Implement branching strategy:
-   - `main` branch (production)
-   - `develop` branch (development)
-   - `feature/*` branches (new features)
-4. ✅ Create `.gitignore` file
-5. ✅ Make initial commit with project structure
-6. ✅ Push to remote repository
+### Branching Strategy (3 marks)
+- [ ] Create `main` branch (production)
+- [ ] Create `develop` branch: `git checkout -b develop`
+- [ ] Create feature branch: `git checkout -b feature/patient-api`
+- [ ] Document branching strategy in README
+- [ ] Take screenshot showing branch structure
 
-**Branching Strategy:**
+### Commit Quality (2 marks)
+- [ ] Make initial commit with project structure
+- [ ] Use conventional commit messages (feat:, fix:, docs:)
+- [ ] Example: `git commit -m "feat: add patient form interface"`
+- [ ] Example: `git commit -m "fix: resolve JSON file permissions"`
+- [ ] Push commits: `git push origin develop`
+- [ ] Take screenshot of commit history
+
+### Pull Requests & Collaboration (2 marks)
+- [ ] Create Pull Request from `feature/patient-api` to `develop`
+- [ ] Add PR description explaining changes
+- [ ] Merge PR to `develop`
+- [ ] Create PR from `develop` to `main` for production
+- [ ] Take screenshots of PR process
+
+---
+
+## 📋 Phase 3: Application Development
+
+### Core Files Setup
+- [ ] Create `index.php` (main page with patient form)
+- [ ] Create `api.php` (API endpoints handler)
+- [ ] Create `Patient.php` (patient model class)
+- [ ] Create `config.php` (application configuration)
+- [ ] Create `data/patients.json` (empty array initially)
+- [ ] Create `composer.json` (if using dependencies)
+
+### Application Features
+- [ ] Implement patient form (Name, Age, Email, Condition)
+- [ ] Add form validation (client and server side)
+- [ ] Create API endpoint: POST `/api.php?action=add`
+- [ ] Create API endpoint: GET `/api.php?action=list`
+- [ ] Create API endpoint: GET `/api.php?action=get&id=X`
+- [ ] Style with Tailwind CSS (CDN)
+- [ ] Test locally: `php -S localhost:8000`
+- [ ] Take screenshots of working application
+
+### Database Setup
+- [ ] Create `data/` directory
+- [ ] Initialize `patients.json` with empty structure:
+  ```json
+  {"patients": []}
+  ```
+- [ ] Set proper permissions: `chmod 777 data/`
+- [ ] Test write operations locally
+
+---
+
+## 📋 Phase 4: CI Pipeline Implementation (10 marks)
+
+### Pipeline Configuration (4 marks)
+- [ ] Create `.github/workflows/` directory
+- [ ] Create `.github/workflows/ci.yml`
+- [ ] Add workflow triggers: `on: [push, pull_request]`
+- [ ] Add job: Setup PHP 8.1
+- [ ] Add step: Checkout code
+- [ ] Add step: Run PHP linting `php -l *.php`
+- [ ] Add step: Build Docker image
+- [ ] Test pipeline by pushing code
+- [ ] Take screenshot of successful pipeline run
+
+### Automation (3 marks)
+- [ ] Verify pipeline runs automatically on push
+- [ ] Verify pipeline runs on PR creation
+- [ ] Check pipeline completes all steps successfully
+- [ ] Take screenshot of GitHub Actions tab
+
+### Error Handling & Notifications (2 marks)
+- [ ] Add failure notification step
+- [ ] Add success status badge to README
+- [ ] Test pipeline with intentional error
+- [ ] Document error handling in workflow
+
+### Security (1 mark)
+- [ ] Create Docker Hub account
+- [ ] Add GitHub Secret: `DOCKERHUB_USERNAME`
+- [ ] Add GitHub Secret: `DOCKERHUB_TOKEN`
+- [ ] Use secrets in workflow: `${{ secrets.DOCKERHUB_TOKEN }}`
+
+---
+
+## 📋 Phase 5: Containerization & Registry (10 marks)
+
+### Dockerfile Quality (3 marks)
+- [ ] Create `Dockerfile` in project root
+- [ ] Use base image: `FROM php:8.1-apache`
+- [ ] Set working directory: `WORKDIR /var/www/html`
+- [ ] Copy application files: `COPY . .`
+- [ ] Set data directory permissions: `RUN chown -R www-data:www-data data/`
+- [ ] Expose port: `EXPOSE 80`
+- [ ] Test Dockerfile builds successfully
+
+### Image Management (3 marks)
+- [ ] Build image: `docker build -t 25rp20201/patient-mgmt:v1.0 .`
+- [ ] Test image locally: `docker run -d -p 8080:80 25rp20201/patient-mgmt:v1.0`
+- [ ] Verify application works in container
+- [ ] Login to Docker Hub: `docker login`
+- [ ] Push image: `docker push 25rp20201/patient-mgmt:v1.0`
+- [ ] Take screenshot of Docker Hub repository
+
+### Container Lifecycle (2 marks)
+- [ ] Run container: `docker run -d --name patient-app patient-mgmt:v1.0`
+- [ ] Check running containers: `docker ps`
+- [ ] View logs: `docker logs patient-app`
+- [ ] Stop container: `docker stop patient-app`
+- [ ] Remove container: `docker rm patient-app`
+- [ ] Take screenshots of each command output
+
+### Best Practices (2 marks)
+- [ ] Create `.dockerignore` file
+- [ ] Add `.git/`, `node_modules/`, `*.md` to `.dockerignore`
+- [ ] Use minimal base image (alpine if possible)
+- [ ] Document Docker commands in README
+
+---
+
+## 📋 Phase 6: Kubernetes Deployment (10 marks)
+
+### Kubernetes Manifest Files (4 marks)
+- [ ] Create `k8s/` directory
+- [ ] Create `k8s/namespace.yml`:
+  ```yaml
+  apiVersion: v1
+  kind: Namespace
+  metadata:
+    name: student-25rp20201
+  ```
+- [ ] Create `k8s/pvc.yml` (PersistentVolumeClaim for data)
+- [ ] Create `k8s/configmap.yml` (application config)
+- [ ] Create `k8s/deployment.yml` (2 replicas)
+- [ ] Create `k8s/service.yml` (LoadBalancer type)
+- [ ] Add health checks (liveness and readiness probes)
+
+### Deployment Execution (3 marks)
+- [ ] Create namespace: `kubectl create namespace student-25rp20201`
+- [ ] Apply all manifests: `kubectl apply -f k8s/`
+- [ ] Verify namespace: `kubectl get namespaces`
+- [ ] Check deployments: `kubectl get deployments -n student-25rp20201`
+- [ ] Check pods: `kubectl get pods -n student-25rp20201`
+- [ ] Check services: `kubectl get services -n student-25rp20201`
+- [ ] Take screenshots of all outputs
+
+### Scalability (2 marks)
+- [ ] Scale deployment: `kubectl scale deployment patient-app --replicas=3 -n student-25rp20201`
+- [ ] Verify scaling: `kubectl get pods -n student-25rp20201`
+- [ ] Scale back to 2 replicas
+- [ ] Take screenshots showing scaling
+
+### Rollback & Recovery (1 mark)
+- [ ] Check rollout history: `kubectl rollout history deployment/patient-app -n student-25rp20201`
+- [ ] Perform rollback: `kubectl rollout undo deployment/patient-app -n student-25rp20201`
+- [ ] Verify rollback successful
+- [ ] Document rollback procedure
+
+---
+
+## 📋 Phase 7: Monitoring & Reliability (10 marks)
+
+### Metrics & Logging (4 marks)
+- [ ] View pod logs: `kubectl logs -f deployment/patient-app -n student-25rp20201`
+- [ ] Check resource usage: `kubectl top pods -n student-25rp20201`
+- [ ] Monitor pod status: `kubectl get pods -w -n student-25rp20201`
+- [ ] Export logs to file for documentation
+- [ ] Take screenshots of log outputs
+
+### Health Checks (2 marks)
+- [ ] Verify liveness probe in deployment.yml
+- [ ] Verify readiness probe in deployment.yml
+- [ ] Test health checks by describing pod
+- [ ] Simulate pod failure and check restart
+- [ ] Take screenshot of probe configuration
+
+### Alerting & Monitoring (3 marks)
+- [ ] Set up basic monitoring checklist
+- [ ] Monitor pod restart count
+- [ ] Check for resource limit warnings
+- [ ] Document alert thresholds (CPU > 80%, Memory > 90%)
+- [ ] Create monitoring dashboard (manual or screenshot based)
+
+### Incident Response (1 mark)
+- [ ] Create `docs/troubleshooting.md`
+- [ ] Document common issues and solutions:
+  - Pod CrashLoopBackOff
+  - ImagePullBackOff
+  - Permission denied on data directory
+  - Service not accessible
+- [ ] Add debugging commands reference
+
+---
+
+## 📋 Phase 8: Documentation & Report (10 marks)
+
+### Structure & Clarity (5 marks)
+- [ ] Create comprehensive `README.md` with:
+  - Project overview
+  - Architecture diagram
+  - Prerequisites
+  - Installation steps
+  - Usage instructions
+  - API documentation
+- [ ] Create `docs/architecture.md` with system diagram
+- [ ] Create `docs/deployment-guide.md`
+- [ ] Use proper markdown formatting
+- [ ] Add table of contents
+
+### Technical Depth (3 marks)
+- [ ] Include architecture diagram (draw.io or similar)
+- [ ] Add screenshots for each phase
+- [ ] Document all commands used
+- [ ] Explain design decisions
+- [ ] Include code snippets with explanations
+
+### References (2 marks)
+- [ ] Cite Docker documentation
+- [ ] Cite Kubernetes documentation
+- [ ] Cite GitHub Actions documentation
+- [ ] Add links to all external resources
+- [ ] Create bibliography section
+
+---
+
+## 📋 Phase 9: CI/CD Automation (Bonus)
+
+### Extended Pipeline
+- [ ] Create `.github/workflows/cd.yml` for continuous deployment
+- [ ] Add automated Docker build on merge to main
+- [ ] Add automated push to Docker Hub with tags
+- [ ] Add automated deployment to Kubernetes
+- [ ] Add smoke tests after deployment
+
+### Pipeline Security
+- [ ] Use GitHub Secrets for all credentials
+- [ ] Implement least privilege access
+- [ ] Add security scanning (optional)
+
+---
+
+## 📋 Phase 10: Final Checks & Submission
+
+### Quality Assurance
+- [ ] Test complete workflow end-to-end
+- [ ] Verify all phases are documented
+- [ ] Check all screenshots are clear and labeled
+- [ ] Validate all commands work as documented
+- [ ] Proofread all documentation
+
+### Deliverables Checklist
+- [ ] GitHub repository URL accessible
+- [ ] Docker Hub repository public
+- [ ] All K8s manifests in repo
+- [ ] CI/CD pipelines functional
+- [ ] Complete documentation
+- [ ] Architecture diagrams included
+- [ ] Screenshots organized in `docs/screenshots/`
+- [ ] Video demo (optional but recommended)
+
+### Repository Structure Verification
 ```
-main (production-ready)
-  └── develop (integration)
-       ├── feature/patient-form
-       ├── feature/patient-api
-       └── feature/json-storage
-```
-
-**Deliverables:**
-- Repository URL
-- Screenshots of Git workflow
-- Commit history
-- Branch structure diagram
-
----
-
-### **PHASE 3: Application Development** 
-**Objective:** Develop the Patient Management System
-**Status:** Completed ✅
-
-<!-- The following sub-sections remain as documented -->
-**Components:**
-
-#### **3.1 PHP Application (Single Stack)**
-**Files:**
-- `index.php` - Main entry point with HTML form and display
-- `api.php` - API endpoints handler
-- `Patient.php` - Patient model class
-- `data/patients.json` - JSON database file
-- `composer.json` - Dependencies (if needed)
-- `config.php` - Application configuration
-
-**API Endpoints:**
-- `POST /api.php?action=add` - Add new patient
-- `GET /api.php?action=list` - Get all patients
-- `GET /api.php?action=get&id=X` - Get patient by ID
-
-#### **3.2 Frontend (Embedded in PHP)**
-**Features:**
-- HTML form to add patient (Name, Age, Email, Condition)
-- Display list of patients in cards
-- Responsive design with Tailwind CSS CDN
-- Modern UI with gradient backgrounds
-- JavaScript for form handling and dynamic updates
-
-#### **3.3 Database (JSON)**
-**Structure:**
-```json
-{
-  "patients": [
-    {
-      "id": "1",
-      "name": "John Doe",
-      "age": 30,
-      "email": "john@example.com",
-      "condition": "Flu",
-      "created_at": "2024-01-01 10:00:00"
-    }
-  ]
-}
-```
-
-**Deliverables:**
-- Source code for all components (index.php, api.php, Patient.php, config.php, composer.json, data/patients.json)
-- Local testing screenshots
-- API testing with Postman/curl
-- Sample JSON database file
-
----
-
-### **PHASE 4: Continuous Integration (CI)**
-**Objective:** Automate build and testing process
-
-**Tools:** GitHub Actions
-
-**Tasks:**
-1. Create `.github/workflows/ci.yml`
-2. Configure CI pipeline:
-   - Trigger on push to `develop` and `main`
-   - Install PHP dependencies with Composer
-   - Run PHP linting (PHP CodeSniffer)
-   - Run unit tests (PHPUnit - basic tests)
-   - Build Docker image
-   - Push image to Docker Hub
-3. Add status badges to README
-
-**CI Pipeline Steps:**
-```yaml
-Build → Test → Lint → Docker Build → Push to Registry
-```
-
-**Deliverables:**
-- GitHub Actions workflow file
-- CI pipeline run screenshots
-- Test results
-- Docker Hub repository link
-
----
-
-### **PHASE 5: Containerization (Docker)**
-**Objective:** Package application into Docker container
-
-**Tools:** Docker, Docker Compose, Docker Hub
-
-**Tasks:**
-1. Create Dockerfile for the application:
-   - `Dockerfile` - PHP with Apache
-   - Include JSON data directory with proper permissions
-2. Create `docker-compose.yml` for local development
-3. Build Docker image with unique tag:
-   - `25rp20201-mbarushimana/patient-management:v1.0`
-4. Push image to Docker Hub
-5. Test container locally with volume mount for data persistence
-
-**Docker Configuration:**
-```yaml
-- app (port 80)
-  - Volume mount for data/patients.json
-```
-
-**Deliverables:**
-- Dockerfile configuration
-- docker-compose.yml file
-- Screenshots of running container (`docker ps`)
-- Docker Hub repository screenshot
-- Container logs
-
----
-
-### **PHASE 6: Orchestration (Kubernetes)**
-**Objective:** Deploy application to Kubernetes cluster
-
-**Tools:** kubectl, Kubernetes (Docker Desktop)
-
-**Tasks:**
-1. Create Kubernetes namespace: `25rp20201-mbarushimana`
-2. Create YAML manifests:
-   - **Deployment:**
-     - `k8s/app-deployment.yml`
-   - **Service:**
-     - `k8s/app-service.yml` (LoadBalancer)
-   - **ConfigMap:**
-     - `k8s/app-configmap.yml` (application config)
-   - **PersistentVolume:**
-     - `k8s/app-pvc.yml` (JSON data persistence)
-3. Deploy to Kubernetes cluster
-4. Verify all pods are running
-5. Access application via LoadBalancer
-
-**Deployment Strategy:**
-- Rolling updates
-- Replica sets (2 replicas for high availability)
-- Health checks (liveness & readiness probes)
-
-**Deliverables:**
-- All Kubernetes YAML manifests
-- Screenshots of deployed resources (`kubectl get all -n 25rp20201-mbarushimana`)
-- Pod logs
-- Application access screenshots
-- Architecture diagram
-
----
-
-### **PHASE 7: Automation (CI/CD Pipeline)**
-**Objective:** Automate the complete deployment pipeline
-
-**Tools:** GitHub Actions
-
-**Tasks:**
-1. Extend CI pipeline to include CD
-2. Create `.github/workflows/cd.yml`:
-   - Build Docker image on merge to main
-   - Push to Docker Hub with version tags
-   - Deploy to Kubernetes automatically
-   - Run smoke tests (basic health checks)
-3. Set up GitHub Secrets:
-   - `DOCKER_USERNAME`
-   - `DOCKER_PASSWORD`
-   - `KUBECONFIG` (if deploying remotely)
-4. Configure automatic deployment on merge to `main`
-5. Document rollback procedures
-
-**CD Pipeline Flow:**
-```
-Code Push → Build → Test → Containerize → Push to Registry → Deploy to K8s → Verify
-```
-
-**Deliverables:**
-- Complete CI/CD workflow files
-- Pipeline execution screenshots
-- Deployment logs
-- Rollback procedure documentation
-
----
-
-### **PHASE 8: Configuration Management**
-**Objective:** Manage configurations across environments
-
-**Tools:** ConfigMaps, Environment Variables
-
-**Tasks:**
-1. Externalize all configurations:
-   - JSON file path
-   - API URLs
-   - Application settings
-2. Create environment-specific configs:
-   - Development
-   - Production
-3. Use Kubernetes ConfigMaps for configuration data
-4. Document configuration management strategy
-
-**Configuration Items:**
-- JSON database file path
-- Application base URL
-- File permissions
-- Application port
-
-**Deliverables:**
-- ConfigMap YAML files
-- Configuration management documentation
-- Environment comparison table
-- Screenshots of applied configs
-
----
-
-### **PHASE 9: Monitoring & Logging**
-**Objective:** Implement monitoring and logging solutions
-
-**Tools:** Kubernetes Dashboard, kubectl logs, Docker logs
-
-**Tasks:**
-1. Set up Kubernetes Dashboard (optional but recommended)
-2. Configure resource monitoring:
-   - CPU usage per pod
-   - Memory usage per pod
-   - Pod health status
-3. Implement centralized logging:
-   - Application logs
-   - Container logs
-   - Error tracking
-4. Create custom monitoring dashboard: `25rp20201-mbarushimana-dashboard`
-5. Set up basic alerts (manual monitoring checks)
-6. Document troubleshooting procedures
-
-**Monitoring Metrics:**
-- Pod status and restarts
-- Resource utilization
-- API response times (basic)
-- Error rates
-- Active connections
-- JSON file read/write operations
-
-**Deliverables:**
-- Kubernetes Dashboard screenshots
-- Monitoring dashboard screenshots
-- Log collection examples
-- Resource usage graphs
-- Troubleshooting guide
-
----
-
-### **PHASE 10: Reliability & Best Practices**
-**Objective:** Implement DevOps best practices for reliability
-
-**Tasks:**
-1. **High Availability:**
-   - Multiple replicas (min 2 per service)
-   - Load balancing configuration
-   - Shared volume for JSON data across replicas
-2. **Health Checks:**
-   - Liveness probes (check if container is alive)
-   - Readiness probes (check if ready to serve traffic)
-3. **Resource Management:**
-   - CPU/Memory requests and limits
-4. **Security:**
-   - Non-root containers
-   - Read-only root filesystem (except data directory)
-   - Proper file permissions for JSON database
-5. **Backup & Recovery:**
-   - JSON file backup strategy
-   - Disaster recovery plan
-   - Volume snapshots
-6. **Documentation:**
-   - Complete architecture diagram
-   - Deployment runbook
-   - Rollback procedures
-   - Incident response plan
-
----
-
-## 📁 Complete Project Structure
-```
-25rp20201_mbarushimana-patient-management/
+25rp20201-patient-management/
 ├── index.php
 ├── api.php
 ├── Patient.php
 ├── config.php
-├── composer.json
-├── data/
-│   └── patients.json
+├── data/patients.json
 ├── Dockerfile
+├── docker-compose.yml
+├── .dockerignore
+├── .gitignore
+├── composer.json
 ├── k8s/
 │   ├── namespace.yml
-│   ├── app-deployment.yml
-│   ├── app-service.yml
-│   ├── app-pvc.yml
-│   └── app-configmap.yml
+│   ├── deployment.yml
+│   ├── service.yml
+│   ├── pvc.yml
+│   └── configmap.yml
 ├── .github/
 │   └── workflows/
 │       ├── ci.yml
 │       └── cd.yml
-├── docker-compose.yml
+├── docs/
+│   ├── infrastructure-setup.md
+│   ├── architecture.md
+│   ├── deployment-guide.md
+│   ├── troubleshooting.md
+│   └── screenshots/
 ├── README.md
-├── .gitignore
-└── docs/
-    ├── architecture-diagram.png
-    └── deployment-guide.md
-```
+└── LICENSE
 
----
-
-## 🔄 Key Changes from Multi-Service Architecture
-1. **Single Container**: One Docker image contains the entire PHP application
-2. **JSON Database**: No separate database container - data stored in JSON file
-3. **Volume Management**: PersistentVolume for JSON file ensures data persistence across pod restarts
-4. **Simplified Deployment**: Single deployment manifest instead of multiple services
-5. **Shared Storage**: Multiple replicas share the same JSON file via PersistentVolume
+**Last Updated:** December 2025  
+**Version:** 1.0  
+**Student ID:** 25RP20201
