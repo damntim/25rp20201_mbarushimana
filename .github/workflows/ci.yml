@@ -57,7 +57,6 @@ jobs:
 
   build:
     name: Build Docker image
-    # CI workflow (insert these steps where you set up Docker build/push)
     runs-on: ubuntu-latest
     needs: test
     steps:
@@ -76,72 +75,50 @@ jobs:
       - name: Buildx version
         run: docker buildx version
 
-      - name: Builder info
-        run: docker buildx ls
-
       - name: Login to Docker Hub
+        if: github.event_name != 'pull_request'
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push (fix invalid tag and output mode)
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./Dockerfile
-          # Push on non-PR events; load on PRs (prevents registry writes during PR)
-          push: ${{ github.event_name != 'pull_request' }}
-          load: ${{ github.event_name == 'pull_request' }}
-          # FIX: provide valid repository/name:tag values
-          tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/patient-mgmt:sha-${{ github.sha }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/patient-mgmt:${{ github.ref_name }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/patient-mgmt:latest
-          # Optional: cache for faster builds
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          # Keep provenance attestation (equivalent to --attest type=provenance,mode=max)
-          provenance: mode=max
-
-  deploy:
-    name: Deploy (push image to Docker Hub)
-    runs-on: ubuntu-latest
-    needs: build
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/'))
-    environment: production
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Generate Docker tags/labels
+      # Generate proper tags using metadata-action
+      - name: Generate Docker metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ secrets.DOCKERHUB_REPOSITORY }}
+          images: ${{ secrets.DOCKERHUB_USERNAME }}/patient-mgmt
           tags: |
-            type=raw,value=sha-${{ github.sha }}
             type=ref,event=branch
-            type=ref,event=tag
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,prefix=sha-
             type=raw,value=latest,enable={{is_default_branch}}
 
-      - name: Build and Push
+      - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile
-          push: true
+          # Push only on main branch or tags, not on PRs
+          push: ${{ github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')) }}
+          # Load image on PRs for testing
+          load: ${{ github.event_name == 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          provenance: mode=max
+
+  deploy:
+    name: Deploy notification
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/'))
+    steps:
+      - name: Deployment success
+        run: |
+          echo "✅ Docker image successfully built and pushed to Docker Hub"
+          echo "📦 Repository: ${{ secrets.DOCKERHUB_USERNAME }}/patient-mgmt"
+          echo "🏷️  Tags: latest, sha-${{ github.sha }}"
