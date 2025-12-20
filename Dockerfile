@@ -1,47 +1,29 @@
-# Use official PHP with Apache
-FROM php:8.2-apache
+# Dockerfile (Phase 5: Containerization)
+# Base image: PHP 8.1 with Apache
+FROM php:8.1-apache
 
-# Set working directory
+# Set working directory inside the container
 WORKDIR /var/www/html
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    git \
-    curl \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
-    zip \
-    unzip \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+# Copy application files into the container
+# Includes index.php, api.php, Patient.php, config.php, data/patients.json, etc.
+COPY . .
 
-# Install PHP extensions
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
-
-# Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# Copy application files
-COPY . /var/www/html
-
-# Install Composer dependencies if composer.json exists
-RUN if [ -f composer.json ]; then \
-    composer install --no-dev --optimize-autoloader --no-interaction; \
-    fi
-
-# Set proper permissions
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html
-
-# Enable Apache mod_rewrite (if using routing)
+# Enable Apache mod_rewrite (commonly needed for PHP routing)
 RUN a2enmod rewrite
 
-# Configure Apache to use /var/www/html as document root
-RUN sed -i 's|/var/www/html|/var/www/html|g' /etc/apache2/sites-available/000-default.conf
+# Ensure data directory exists in the image even if local data/ is ignored
+RUN mkdir -p /var/www/html/data \
+    && chown -R www-data:www-data /var/www/html/data
 
-# Expose port 80
+# Optional: install curl for HEALTHCHECK
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
+# Add a healthcheck to verify the web server responds
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
+  CMD curl -fsS http://localhost/ || exit 1
+
+# Expose HTTP port
 EXPOSE 80
 
-# Start Apache
-CMD ["apache2-foreground"]
+# No CMD needed; php:8.1-apache starts Apache by default

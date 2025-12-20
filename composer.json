@@ -3,6 +3,7 @@
   "description": "Simple patient management with PHP and JSON storage",
   "type": "project",
   "require": {
-    "php": ">=8.1"
+    "php": ">=8.1",
+    "promphp/prometheus_client_php": "^2.14"
   }
 }

@@ -1,0 +1,11 @@
+.git
+.github
+docs
+*.md
+*.log
+.env
+.DS_Store
+Thumbs.db
+
+# Optional: exclude local data files if you mount a volume at runtime
+# data/*.json
