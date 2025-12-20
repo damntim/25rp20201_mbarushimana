@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: patient-app
+  namespace: student-25rp20201
+  labels:
+    app: patient-app
+spec:
+  type: LoadBalancer
+  selector:
+    app: patient-app
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80

@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: patient-app
+  namespace: student-25rp20201
+  labels:
+    app: patient-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: patient-app
+  template:
+    metadata:
+      labels:
+        app: patient-app
+    spec:
+      securityContext:
+        runAsUser: 33
+        runAsGroup: 33
+        fsGroup: 33
+      containers:
+        - name: patient-app
+          image: damntime/25rp20201_mbarushimana:v1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          envFrom:
+            - configMapRef:
+                name: patient-app-config
+          readinessProbe:
+            httpGet:
+              path: /index.php
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /api.php?action=list
+              port: 80
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+          volumeMounts:
+            - name: data-dir
+              mountPath: /var/www/html/data
+      volumes:
+        - name: data-dir
+          emptyDir: {}
+      # To use persistent storage with a single replica and compatible RWX storage:
+      # volumes:
+      #   - name: data-dir
+      #     persistentVolumeClaim:
+      #       claimName: patient-app-pvc

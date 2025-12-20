@@ -5,6 +5,10 @@ header('Content-Type: application/json');
 require __DIR__ . DIRECTORY_SEPARATOR . 'config.php';
 require __DIR__ . DIRECTORY_SEPARATOR . 'Patient.php';
 
+// Metrics: start timing and registry
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'metrics' . DIRECTORY_SEPARATOR . 'bootstrap.php';
+$metrics_start_ns = hrtime(true);
+
 $action = (string)($_GET['action'] ?? '');
 $method = $_SERVER['REQUEST_METHOD'];
 
@@ -87,3 +91,8 @@ try {
     http_response_code(500);
     echo json_encode(['error' => 'Server error', 'details' => $e->getMessage()]);
 }
+
+// Metrics: record
+$status_code = http_response_code();
+$duration_seconds = (hrtime(true) - $metrics_start_ns) / 1e9;
+metrics_observe_request('/api.php', $_SERVER['REQUEST_METHOD'] ?? 'GET', $status_code, $duration_seconds);

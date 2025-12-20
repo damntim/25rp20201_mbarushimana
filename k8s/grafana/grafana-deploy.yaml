@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+        - name: grafana
+          image: grafana/grafana:10.4.3
+          ports:
+            - name: http
+              containerPort: 3000
+          volumeMounts:
+            - name: provisioning
+              mountPath: /etc/grafana/provisioning
+      volumes:
+        - name: provisioning
+          projected:
+            sources:
+              - configMap:
+                  name: grafana-datasource
+              - configMap:
+                  name: grafana-dashboards
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-datasource
+  namespace: monitoring
+data:
+  datasources.yaml: |
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        access: proxy
+        url: http://prometheus.monitoring.svc:9090
+        isDefault: true
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards
+  namespace: monitoring
+data:
+  dashboards.yaml: |
+    apiVersion: 1
+    providers:
+      - name: 'patient-app'
+        orgId: 1
+        folder: 'Patient App'
+        type: file
+        updateIntervalSeconds: 10
+        options:
+          path: /var/lib/grafana/dashboards
+  patient-app-dashboard.json: |
+    {
+      "title": "Patient App",
+      "timezone": "",
+      "panels": [
+        {
+          "type": "stat",
+          "title": "HTTP Requests Total",
+          "datasource": "Prometheus",
+          "targets": [
+            { "expr": "sum(patient_app_requests_total)" }
+          ]
+        },
+        {
+          "type": "graph",
+          "title": "Request Duration (p95)",
+          "datasource": "Prometheus",
+          "targets": [
+            { "expr": "histogram_quantile(0.95, sum(rate(patient_app_request_duration_seconds_bucket[5m])) by (le))" }
+          ]
+        }
+      ],
+      "schemaVersion": 38
+    }

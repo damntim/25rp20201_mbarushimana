@@ -1,4 +1,8 @@
-<?php declare(strict_types=1); ?>
+<?php declare(strict_types=1);
+// Metrics: start timing and registry
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'metrics' . DIRECTORY_SEPARATOR . 'bootstrap.php';
+$metrics_start_ns = hrtime(true);
+?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -130,3 +134,9 @@
   </script>
 </body>
 </html>
+<?php
+// Metrics: record
+$status_code = http_response_code();
+$duration_seconds = (hrtime(true) - $metrics_start_ns) / 1e9;
+metrics_observe_request('/index.php', $_SERVER['REQUEST_METHOD'] ?? 'GET', $status_code, $duration_seconds);
+?>
