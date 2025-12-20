@@ -63,17 +63,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up QEMU (optional for multi-arch)
-        uses: docker/setup-qemu-action@v3
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-
-      - name: Docker info
-        run: docker info
-
-      - name: Buildx version
-        run: docker buildx version
 
       - name: Login to Docker Hub
         if: github.event_name != 'pull_request'
@@ -101,15 +92,15 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          # Push only on main branch or tags, not on PRs
+          # For PRs: don't push, don't load (just build for validation)
+          # For main/tags: push to registry
           push: ${{ github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')) }}
-          # Load image on PRs for testing
-          load: ${{ github.event_name == 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          provenance: mode=max
+          # Build for linux/amd64 only (native platform)
+          platforms: linux/amd64
 
   deploy:
     name: Deploy notification
@@ -121,4 +112,4 @@ jobs:
         run: |
           echo "✅ Docker image successfully built and pushed to Docker Hub"
           echo "📦 Repository: ${{ secrets.DOCKERHUB_USERNAME }}/patient-mgmt"
-          echo "🏷️  Tags: latest, sha-${{ github.sha }}"
+          echo "🏷️  Tag: sha-${GITHUB_SHA:0:7}"
