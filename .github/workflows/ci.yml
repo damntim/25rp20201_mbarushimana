@@ -107,7 +107,7 @@ jobs:
       - name: Build backend Docker image
         run: docker build -t backend-test ./backend
       - name: Validate docker-compose.yml
-        run: docker-compose config
+        run: docker compose config
 
   docker-frontend:
     name: Docker - Frontend Build
