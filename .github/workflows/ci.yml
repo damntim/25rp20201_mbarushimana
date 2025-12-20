@@ -99,13 +99,29 @@ jobs:
           test -f frontend/app.js
           node --check frontend/app.js
 
+  docker-backend:
+    name: Docker - Backend Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build backend Docker image
+        run: docker build -t backend-test ./backend
+      - name: Validate docker-compose.yml
+        run: docker-compose config
+
+  docker-frontend:
+    name: Docker - Frontend Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build frontend Docker image
+        run: docker build -t frontend-test ./frontend
+
   security-trivy:
     name: Security - Trivy FS Scan
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
-
       - name: Trivy filesystem scan
         uses: aquasecurity/trivy-action@0.28.0
         with:
