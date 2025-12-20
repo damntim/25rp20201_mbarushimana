@@ -4,101 +4,69 @@
 
 ---
 
-## 📋 Phase 1: Infrastructure & Environment Setup (10 marks)
-
-### Environment Preparation (4 marks)
-- [ ] Install WSL2 Ubuntu 22.04
-- [ ] Install Docker Desktop with WSL2 backend enabled
-- [ ] Enable Kubernetes in Docker Desktop settings
-- [ ] Install Git in WSL
-- [ ] Install PHP 8.1+ CLI
-- [ ] Verify Docker: `docker --version`
-- [ ] Verify Kubernetes: `kubectl version --client`
-- [ ] Verify PHP: `php -v`
-- [ ] Take screenshot of all version outputs
-
-### Networking & Configuration (3 marks)
-- [ ] Verify Docker network is running: `docker network ls`
-- [ ] Test Kubernetes cluster: `kubectl cluster-info`
-- [ ] Confirm port 80 is available for application
-- [ ] Document network configuration
-
-### Resource Allocation (2 marks)
-- [ ] Confirm Docker Desktop has 2+ CPU cores allocated
-- [ ] Confirm Docker Desktop has 4GB+ RAM allocated
-- [ ] Check available disk space (20GB+ recommended)
-- [ ] Take screenshot of Docker Desktop resource settings
-
-### Documentation (1 mark)
-- [ ] Create `docs/infrastructure-setup.md`
-- [ ] Include all screenshots of installations
-- [ ] Document any issues encountered and solutions
-
----
-
 ## 📋 Phase 2: Version Control & Git Workflow (10 marks)
 
 ### Repository Setup (3 marks)
-- [ ] Create GitHub account (if needed)
-- [ ] Create repository: `25rp20201-patient-management`
-- [ ] Initialize local Git repo: `git init`
-- [ ] Configure Git user: `git config user.name` and `git config user.email`
-- [ ] Connect to remote: `git remote add origin <URL>`
-- [ ] Create `.gitignore` file (ignore `data/*.json`, `.env`, etc.)
-- [ ] Take screenshot of GitHub repository page
+- [DONE] Create GitHub account (if needed)
+- [DONE] Create repository: `25rp20201-patient-management`
+- [DONE] Initialize local Git repo: `git init`
+- [DONE] Configure Git user: `git config user.name` and `git config user.email`
+- [DONE] Connect to remote: `git remote add origin <URL>`
+- [DONE] Create `.gitignore` file (ignore `data/*.json`, `.env`, etc.)
+- [DONE] Take screenshot of GitHub repository page
 
 ### Branching Strategy (3 marks)
-- [ ] Create `main` branch (production)
-- [ ] Create `develop` branch: `git checkout -b develop`
-- [ ] Create feature branch: `git checkout -b feature/patient-api`
-- [ ] Document branching strategy in README
-- [ ] Take screenshot showing branch structure
+- [DONE] Create `main` branch (production)
+- [DONE] Create `develop` branch: `git checkout -b develop`
+- [DONE] Create feature branch: `git checkout -b feature/patient-api`
+- [DONE] Document branching strategy in README
+- [DONE] Take screenshot showing branch structure
 
 ### Commit Quality (2 marks)
-- [ ] Make initial commit with project structure
-- [ ] Use conventional commit messages (feat:, fix:, docs:)
-- [ ] Example: `git commit -m "feat: add patient form interface"`
-- [ ] Example: `git commit -m "fix: resolve JSON file permissions"`
-- [ ] Push commits: `git push origin develop`
-- [ ] Take screenshot of commit history
+- [DONE] Make initial commit with project structure
+- [DONE] Use conventional commit messages (feat:, fix:, docs:)
+- [DONE] Example: `git commit -m "feat: add patient form interface"`
+- [DONE] Example: `git commit -m "fix: resolve JSON file permissions"`
+- [DONE] Push commits: `git push origin develop`
+- [DONE] Take screenshot of commit history
 
 ### Pull Requests & Collaboration (2 marks)
-- [ ] Create Pull Request from `feature/patient-api` to `develop`
-- [ ] Add PR description explaining changes
-- [ ] Merge PR to `develop`
-- [ ] Create PR from `develop` to `main` for production
-- [ ] Take screenshots of PR process
+- [DONE] Create Pull Request from `feature/patient-api` to `develop`
+- [DONE] Add PR description explaining changes
+- [DONE] Merge PR to `develop`
+- [DONE] Create PR from `develop` to `main` for production
+- [DONE] Take screenshots of PR process
 
 ---
 
 ## 📋 Phase 3: Application Development
 
 ### Core Files Setup
-- [ ] Create `index.php` (main page with patient form)
-- [ ] Create `api.php` (API endpoints handler)
-- [ ] Create `Patient.php` (patient model class)
-- [ ] Create `config.php` (application configuration)
-- [ ] Create `data/patients.json` (empty array initially)
-- [ ] Create `composer.json` (if using dependencies)
+- [DONE] Create `index.php` (main page with patient form)
+- [DONE] Create `api.php` (API endpoints handler)
+- [DONE] Create `Patient.php` (patient model class)
+- [DONE] Create `config.php` (application configuration)
+- [DONE] Create `data/patients.json` (empty array initially)
+- [DONE] Create `composer.json` (if using dependencies)
 
 ### Application Features
-- [ ] Implement patient form (Name, Age, Email, Condition)
-- [ ] Add form validation (client and server side)
-- [ ] Create API endpoint: POST `/api.php?action=add`
-- [ ] Create API endpoint: GET `/api.php?action=list`
-- [ ] Create API endpoint: GET `/api.php?action=get&id=X`
-- [ ] Style with Tailwind CSS (CDN)
-- [ ] Test locally: `php -S localhost:8000`
-- [ ] Take screenshots of working application
+- [DONE] Implement patient form (Name, Age, Email, Condition)
+- [DONE] Add form validation (client and server side)
+- [DONE] Create API endpoint: POST `/api.php?action=add`
+- [DONE] Create API endpoint: GET `/api.php?action=list`
+- [DONE] Create API endpoint: GET `/api.php?action=get&id=X`
+- [DONE] Style with Tailwind CSS (CDN)
+- [DONE] Test locally: `php -S localhost:8000`
+- [DONE] Take screenshots of working application
 
 ### Database Setup
-- [ ] Create `data/` directory
-- [ ] Initialize `patients.json` with empty structure:
+- [DONE] Create `data/` directory
+- [DONE] Initialize `patients.json` with empty structure:
   ```json
   {"patients": []}
   ```
-- [ ] Set proper permissions: `chmod 777 data/`
-- [ ] Test write operations locally
+- [DONE] Set proper permissions: `chmod 777 data/`
+- [DONE] Test write operations locally
 
 ---
 
@@ -128,10 +96,10 @@
 - [ ] Document error handling in workflow
 
 ### Security (1 mark)
-- [ ] Create Docker Hub account
-- [ ] Add GitHub Secret: `DOCKERHUB_USERNAME`
-- [ ] Add GitHub Secret: `DOCKERHUB_TOKEN`
-- [ ] Use secrets in workflow: `${{ secrets.DOCKERHUB_TOKEN }}`
+- [DONE] Create Docker Hub account
+- [DONE] Add GitHub Secret: `DOCKERHUB_USERNAME`
+- [DONE] Add GitHub Secret: `DOCKERHUB_TOKEN`
+- [] Use secrets in workflow: `${{ secrets.DOCKERHUB_TOKEN }}`
 
 ---
 
